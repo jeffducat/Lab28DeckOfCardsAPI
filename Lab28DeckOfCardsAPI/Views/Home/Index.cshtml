@@ -1,0 +1,66 @@
+﻿
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<input type="button" class="btn btn-danger" value="Deal Cards" onclick="DealCard()" />
+<input type="button" class="btn btn-danger" value="Shuffle" onclick="Shuffle()" />
+<div id="deck"></div>
+
+<div id="Regista" class="col-md-3 col-xs-3"></div>
+<style>
+    img {
+        width: 150px;
+        height: 220px;
+    }
+
+    .card-name {
+        text-align: center;
+    }
+</style>
+
+<script>
+    var deckId = "";
+    $(document).ready(function () {
+        $.ajax({
+            url: 'https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1',
+            method: 'GET',
+            success: function (result) {
+                deckId = result.deck_id;
+                DealCard();
+            }
+        })
+    });
+    function DealCard() {
+        if (deckId !== "" || deckId !== 'undefined') {
+            $.ajax({
+                url: 'https://deckofcardsapi.com/api/deck/' + deckId + '/draw/?count=5',
+                method: 'GET',
+                success: function (result) {
+                    console.log(result);
+                    $('#deck').html('');
+                    for (i = 0; i < result.cards.length; i++) {
+                        $('#deck').append('<div class="col-md-2 col-xs-6"><img src="' +
+                            result.cards[i].image + '"><div class="card-name">' + result.cards[i].value + ' ' +
+                            result.cards[i].suit + '</div></div>');
+                    }
+                }
+            })
+        }
+    }
+    function Shuffle() {
+        if (deckId !== "" || deckId !== 'undefined') {
+            $.ajax({
+                url: 'https://deckofcardsapi.com/api/deck/' + deckId + '/shuffle/',
+                method: 'GET',
+                success: function (result) {
+                    console.log(result);
+                    $('#deck').html('');
+                }
+            });
+        }
+    }
+</script>
+
+
